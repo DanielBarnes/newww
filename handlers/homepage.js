@@ -5,6 +5,9 @@ var MODIFIED_TTL = 1 * MINUTE;
 var DEPENDENTS_TTL = 30 * MINUTE;
 
 module.exports = function (request, reply) {
+  if (request.query && request.query.q) {
+    return reply.redirect('/search?q=' + request.query.q);
+  }
   var Package = require("../models/package").new(request);
   var Download = require("../models/download").new({
     request: request, cache: require("../lib/cache")

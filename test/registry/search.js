@@ -47,6 +47,19 @@ describe('Rendering the view', function () {
     });
   });
 
+  it('redirects /?q=foo to /search?q=foo', function (done) {
+    var options =  {
+      url: '/?q=food-trucks',
+      method: 'GET'
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include("/search?q=food-trucks");
+      done();
+    });
+  });
+
   it('redirects /search/foo to /search?q=foo', function (done) {
     var options =  {
       url: '/search/food-trucks',
