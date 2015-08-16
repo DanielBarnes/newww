@@ -1,9 +1,9 @@
 
 var Joi = require('joi'),
-    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
-    VALID_CHARGE_AMOUNTS = [35000, 100000];
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
+  VALID_CHARGE_AMOUNTS = [35000, 100000];
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   var opts = {
     title: "Join the Who's Hiring Page",
@@ -29,7 +29,7 @@ module.exports = function (request, reply) {
     client_ip: Joi.string()
   });
 
-  Joi.validate(request.payload, schema, function (err, token) {
+  Joi.validate(request.payload, schema, function(err, token) {
     if (err) {
       request.logger.error('validation error');
       request.logger.error(err);
@@ -48,7 +48,7 @@ module.exports = function (request, reply) {
       currency: "usd",
       card: token.id, // obtained with Stripe.js
       description: "Charge for " + token.email
-    }, function(err, charge) {
+    }, function(err) {
       if (err) {
         request.logger.error('internal stripe error; token amount is ', token.amount);
         request.logger.error(err);
@@ -56,13 +56,11 @@ module.exports = function (request, reply) {
       }
 
       request.metrics.metric({
-        name:  'latency',
+        name: 'latency.stripe',
         value: Date.now() - stripeStart,
-        type:  'stripe'
       });
 
-      request.timing.page = 'whoshiring-paymentProcessed';
       return reply('Stripe charge successful').code(200);
     });
   });
-}
+};

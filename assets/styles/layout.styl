@@ -26,21 +26,40 @@ section
 .tablet-width
   max-width tablet-width
 
+.right-well-fixed
+  max-width 930px
+  margin 0 auto
+
 .content-column
   position relative
   float left
   width 65%
   margin-bottom 90px
 
+  .right-well-fixed &
+    width 460px
+
+    @media only screen and (max-width: 929px)
+      width 100%
+
+
   @media only screen and (max-width: mobileMaxWidth)
     float none
     width 100%
     margin-bottom 40px
 
+
 .sidebar
   float right
   margin-top 40px
   width 30%
+
+  .right-well-fixed &
+    width 380px
+
+    @media only screen and (max-width: 929px)
+      width 100%
+
   @media only screen and (max-width: mobileMaxWidth)
     width 100%
     float none
@@ -77,6 +96,11 @@ form.star
       color npmred
       transform rotate(360deg)
 
+.package-name
+  i
+    position relative
+    left 0px
+    bottom 8px
 
 ul.columnar
   @extend .vanilla-list
@@ -90,6 +114,16 @@ ul.columnar
 
   @media only screen and (max-width: mobileMaxWidth)
     columns 1
+
+.collaborated-packages
+  li
+    .icon-lock
+      position absolute
+      left -20px
+      color greigh3
+
+      @media only screen and (max-width: mobileMaxWidth)
+        left -14px
 
 .package-widget
 
@@ -114,7 +148,7 @@ ul.columnar
     color greigh2
     &:before
       @extend .iconic-before
-      content "\e617"
+      content "\e618"
       color greigh5
       line-height packageWidgetHeadingHeight
       padding-right 6px
@@ -238,6 +272,9 @@ table
             height 100%
             border-radius 3px
 
+  &.subscriptions
+    tr th
+      font-weight 600
 
 .pagination
   margin 50px 0
@@ -396,6 +433,10 @@ img.roomy-and-flexible
   max-width 100%
   margin 40px 0
 
+.img-container
+  img
+    max-width 100%
+
 .npm-install
   position relative
   margin-bottom 20px
@@ -424,3 +465,56 @@ img.roomy-and-flexible
     height npmInstallHeight+2px
     cursor text
     font-size npmInstallFontSize
+
+.search-results
+  li
+    list-style none
+
+  h3
+    // padding-top 40px
+    padding-bottom 0
+
+  .name
+    font-weight bold
+    font-size 1.2em
+
+  .author
+    code-font()
+    font-size .9em
+    color greigh4
+    a
+      color greigh4
+      &:hover
+        color npmred
+
+  p
+    margin-bottom 0px
+
+  .package-details
+    position relative
+
+  .keywords, .stats
+    color greigh4
+    font-size 0.8em
+
+  .readme-context
+    background-color #f6f6f6
+    padding 5px
+    font-size 0.8em
+    color greigh3
+
+  i
+    position relative
+    font-size 0.9em
+    margin-right 4px
+    top 1px
+
+/* Accessibility */
+
+.a11y-only
+  position absolute !important
+  height 1px
+  width 1px
+  overflow hidden
+  clip rect(1px 1px 1px 1px) /* IE6, IE7 */
+  clip rect(1px, 1px, 1px, 1px)

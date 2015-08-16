@@ -23,7 +23,7 @@ The [assets](assets) directory contains all the frontend stuff: JavaScript, styl
 
 We're using Stylus, a CSS preprocessor with clean syntax and all the bells and whistles one would expect from a CSS preprocessor like variables, mixins, color manipulation functions, autoprefixing, etc. It's less of a hassle than Sass because it doesn't have C or Ruby dependencies.
 
-[assets/styles/index.styl](assets/styles/index.styl) is the master stylesheet, which is converted by the  [gulp process](gulpfile.js) to [static/styles/index.css](static/styles/index.css).
+[assets/styles/index.styl](assets/styles/index.styl) is the master stylesheet, which is converted by the  [gulp process](gulpfile.js) to static/styles/index.css.
 
 For more information, see the [style guide](assets/styles/README.md).
 
@@ -45,7 +45,7 @@ We use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a st
 
 ### Routes
 
-Every route in the application is defined in [routes.js](routes.js).
+Every route in the application is defined in [routes](/routes).
 
 ### Handlers
 

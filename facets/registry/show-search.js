@@ -1,14 +1,16 @@
 var elasticsearch = require('elasticsearch'),
-    merge = require('lodash').merge,
-    perPage = 24;
+  merge = require('lodash').merge,
+  perPage = 20;
 
-var client = new elasticsearch.Client({ host: process.env.ELASTICSEARCH_URL });
+var client = new elasticsearch.Client({
+  host: process.env.ELASTICSEARCH_URL
+});
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   // Redirect /search/foo to /search/?foo
   if (request.params && request.params.q) {
-    return reply.redirect('/search?q='+request.params.q)
+    return reply.redirect('/search?q=' + request.params.q);
   }
 
   if (!request.query || !request.query.q) {
@@ -17,13 +19,13 @@ module.exports = function (request, reply) {
 
   var page = Math.abs(parseInt(request.query.page, 10)) || 1;
   var searchQuery = {
-    fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
+    fields: ['name', 'keywords', 'description', 'author', 'version', 'stars', 'dlScore', 'dlDay', 'dlWeek', 'readme'],
     body: {
       from: (page - 1) * perPage,
-      size : perPage,
-      "query" : {
+      size: perPage,
+      "query": {
         "dis_max": {
-          "tie_breaker": 0.7,
+          "tie_breaker": 0.9,
           "boost": 1.2,
           "queries": [
             {
@@ -31,10 +33,6 @@ module.exports = function (request, reply) {
                 "query": {
                   "match": {
                     "name.untouched": request.query.q
-                    /*"name.untouched":{
-                      "query": request.query.q,
-                      "operator": "and"
-                    }*/
                   }
                 },
                 "boost_factor": 100
@@ -43,39 +41,36 @@ module.exports = function (request, reply) {
             {
               "bool": {
                 "should": [
-                {"match_phrase": {"name": request.query.q} },
-                {"match_phrase": {"keywords": request.query.q} },
-                {"match_phrase": {"description": request.query.q} },
-                {"match_phrase": {"readme": request.query.q} }
-                ],
-                "minimum_should_match": 1,
-                "boost": 50
-              }
-            },
-            {
-              "function_score": {
-                "query": {
-                  "multi_match": {
-                    "query": request.query.q,
-                    "fields": ["name^4", "keywords", "description", "readme"]
-                  }
-                },
-                "functions": [
                   {
-                    "script_score": {
-                      "script": "(doc['dlScore'].isEmpty() ? 0 : doc['dlScore'].value)"
+                    "match": {
+                      "name": {
+                        "query": request.query.q,
+                        "type": "phrase",
+                        "operator": "and",
+                        boost: 20
+                      }
                     }
                   },
                   {
-                    "script_score": {
-                      "script": "doc['stars'].isEmpty() ? 0 : doc['stars'].value"
+                    "match_phrase": {
+                      "keywords": request.query.q
+                    }
+                  },
+                  {
+                    "match_phrase": {
+                      "description": request.query.q
+                    }
+                  },
+                  {
+                    "match_phrase": {
+                      "readme": request.query.q
                     }
                   }
                 ],
-                "score_mode": "sum",
-                "boost_mode": "multiply"
+                "minimum_should_match": 1,
+                "boost": 30
               }
-            }
+            },
           ]
         }
       }
@@ -83,23 +78,21 @@ module.exports = function (request, reply) {
   };
 
   var start = Date.now();
-  client.search(searchQuery, function (error, response) {
+  client.search(searchQuery, function(error, response) {
     request.metrics.metric({
-      name: 'latency',
+      name: 'latency.elasticsearch',
       value: Date.now() - start,
-      type: 'elasticsearch',
-      query: request.query.q
     });
 
     var opts = { };
 
     if (error) {
       request.logger.warn('elasticsearch failed searching ' + request.query.q);
+      request.logger.error(error);
       return reply.view('errors/internal', opts).code(500);
     }
 
     request.timing.page = 'search';
-    request.metrics.metric({ name: 'search', search: request.query.q });
 
     merge(opts, {
       title: 'results for ',
@@ -113,7 +106,7 @@ module.exports = function (request, reply) {
     });
 
     if (opts.prevPage || opts.nextPage) {
-      opts.pages = {}
+      opts.pages = {};
       if (opts.prevPage) {
         opts.pages.prev = "/search?q=" + opts.q + "&page=" + opts.prevPage;
       }
@@ -124,4 +117,4 @@ module.exports = function (request, reply) {
 
     return reply.view('registry/search', opts);
   });
-}
+};

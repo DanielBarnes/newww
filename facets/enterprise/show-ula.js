@@ -1,7 +1,8 @@
 var Hoek = require('hoek'),
-    Joi = require('joi');
+  Joi = require('joi'),
+  utils = require('../../lib/utils');
 
-module.exports = function createHubspotLead (request, reply) {
+module.exports = function createHubspotLead(request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
 
   var opts = { };
@@ -30,13 +31,14 @@ module.exports = function createHubspotLead (request, reply) {
 
   var data = {
     hs_context: {
-      pageName: "enterprise-signup"
+      pageName: "enterprise-signup",
+      ipAddress: utils.getUserIP(request)
     }
   };
 
   data = Hoek.applyToDefaults(data, validatedData.value);
 
-  postToHubspot(process.env.HUBSPOT_FORM_NPME_SIGNUP, data, function (er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_SIGNUP, data, function(er) {
     if (er) {
       request.logger.error('Could not send signup data to hubspot');
       request.logger.error(er);
@@ -48,13 +50,13 @@ module.exports = function createHubspotLead (request, reply) {
   });
 };
 
-function getOrCreateCustomer (request, reply, data) {
+function getOrCreateCustomer(request, reply, data) {
   var getCustomer = request.server.methods.npme.getCustomer,
-      createCustomer = request.server.methods.npme.createCustomer;
+    createCustomer = request.server.methods.npme.createCustomer;
 
   var opts = { };
 
-  getCustomer(data.email, function (err, customer) {
+  getCustomer(data.email, function(err, customer) {
 
     if (err) {
       request.logger.error('There was an error with getting customer ' + data.email);
@@ -69,7 +71,7 @@ function getOrCreateCustomer (request, reply, data) {
     }
 
     // new customer, needs to be created
-    createCustomer(data, function (err, newCustomer) {
+    createCustomer(data, function(err, newCustomer) {
 
       if (err) {
         request.logger.error('There was an error creating customer ' + data.email);
@@ -83,7 +85,7 @@ function getOrCreateCustomer (request, reply, data) {
   });
 }
 
-function showClickThroughAgreement (reply, customer) {
+function showClickThroughAgreement(reply, customer) {
   // we use both email and ID so people can't just guess an ID to get a license
 
   var opts = {

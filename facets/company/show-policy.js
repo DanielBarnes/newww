@@ -1,10 +1,10 @@
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   var opts = { };
   var policy = request.params.policy || 'README';
 
-  request.server.methods.corp.getPolicy(policy, function (err, content) {
+  request.server.methods.corp.getPolicy(policy, function(err, content) {
 
     if (err) {
       request.logger.warn('could not find policy ' + policy);
@@ -15,8 +15,6 @@ module.exports = function (request, reply) {
     opts.md = content;
 
     request.timing.page = 'policy-' + policy;
-    request.metrics.metric({name: 'policy-' + policy});
-
     return reply.view('company/corporate', opts);
   });
 };

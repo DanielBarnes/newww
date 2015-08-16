@@ -39,9 +39,6 @@ h1
   line-height 1.2
   letter-spacing -1.5px
   color greigh1
-  // &.centered
-  //   text-align center
-  //   padding 40px 0 20px 0
 
   .narrow &
     margin 0.2em 0
@@ -163,6 +160,7 @@ pre
 
 &.package-name
   padding-bottom 0
+  padding-right 25px
   a
     color text-color
     text-decoration none
@@ -183,3 +181,29 @@ pre
   background greigh8
   border 1px solid greigh6
   border-radius 3px
+
+.visible
+  display block
+  visibility visable
+
+.hidden
+  display none
+
+.fake-strong
+  font-weight normal
+
+  &:before,
+  &:after
+    content "*"
+    display inline
+
+.description
+  color #979797
+  font-size .75em
+  margin 0
+
+  .included,
+  .additional
+    display block
+    margin-left 2.333333em
+    line-height 1.5

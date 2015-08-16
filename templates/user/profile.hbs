@@ -13,9 +13,15 @@
     <ul class="bullet-free collaborated-packages">
       {{#each packages.items}}
         <li>
-          <a href="/package/{{name}}">{{truncate name 50}}</a> {{description}}
+          {{#if isPrivate}}<i class="icon-lock"></i>{{/if}}
+          <a href="/package/{{name}}">{{truncate name 50}}</a>
+          {{#if version}}- <strong>v{{version}}</strong>{{/if}}
+          {{#if description}}- {{description}}{{/if}}
         </li>
       {{/each}}
+      {{#if packages.hasMore}}
+        <a href="#" class="button fetch-more-packages">view more packages</a>
+      {{/if}}
     </ul>
   {{/if}}
 
@@ -51,7 +57,11 @@
     <h2>Your Account</h2>
 
     <ul class="box profile-edit-links">
-      <li><a href="/settings/billing">sign up for private modules</a></li>
+      {{#if isPaid}}
+        <li><a href="/settings/billing">manage billing</a></li>
+      {{else}}
+        <li><a href="/settings/billing">sign up for private modules</a></li>
+      {{/if}}
       <li><a href="/profile-edit">update your profile</a></li>
       <li><a href="/password">change your password</a></li>
       <li><a href="http://gravatar.com/emails/">set your avatar</a></li>
